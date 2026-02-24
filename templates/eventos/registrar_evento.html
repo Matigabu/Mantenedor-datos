@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% block title %}Registrar Evento{% endblock %}
+
+{% block content %}
+
+<div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title">Registrar Evento</h3>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="card-body">
+
+            <!--  ORIGEN  -->
+            <div class="card card-outline mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Origen</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+
+                        <div class="col-md-4 mb-3">
+                            <label>{{ form.canal.label }}</label>
+                            {{ form.canal }}
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label>{{ form.numero_orden.label }}</label>
+                            {{ form.numero_orden }}
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label>{{ form.solicitante.label }}</label>
+                            {{ form.solicitante }}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!--  UBICACIÓN  -->
+            <div class="card card-outline mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Ubicación</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+
+                        <div class="col-md-3 mb-3">
+                            <label>{{ form.torre.label }}</label>
+                            {{ form.torre }}
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <label>{{ form.piso.label }}</label>
+                            {{ form.piso }}
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <label>{{ form.servicio.label }}</label>
+                            {{ form.servicio }}
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <label>{{ form.habitacion_box.label }}</label>
+                            {{ form.habitacion_box }}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- DETALLE TÉCNICO -->
+            <div class="card card-outline mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Detalle Técnico</h5>
+                </div>
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div class="col-md-4 mb-3">
+                            <label>{{ form.tipo_trabajo.label }}</label>
+                            {{ form.tipo_trabajo }}
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label>{{ form.numero_circuito.label }}</label>
+                            {{ form.numero_circuito }}
+                        </div>
+
+                        <div class="col-md-2 mb-3">
+                            <label>{{ form.cantidad_luminaria.label }}</label>
+                            {{ form.cantidad_luminaria }}
+                        </div>
+
+                        <div class="col-md-2 mb-3">
+                            <label>{{ form.tipo_luminaria.label }}</label>
+                            {{ form.tipo_luminaria }}
+                        </div>
+
+                    </div>
+
+                    <div class="mb-3">
+                        <label>{{ form.descripcion.label }}</label>
+                        {{ form.descripcion }}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>{{ form.estado.label }}</label>
+                            {{ form.estado }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>{{ form.turno.label }}</label>
+                            {{ form.turno }}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-footer text-right">
+            <button type="submit" class="btn btn-primary">
+                Guardar Evento
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    const canal = document.getElementById("id_canal");
+    const numeroOrden = document.getElementById("id_numero_orden");
+
+    const tipoTrabajo = document.getElementById("id_tipo_trabajo");
+    const cantidad = document.getElementById("id_cantidad_luminaria");
+    const tipoLum = document.getElementById("id_tipo_luminaria");
+
+    function actualizarCanal() {
+        if (!canal || !numeroOrden) return;
+
+        const habilitar = canal.value === "FRACTTAL";
+        numeroOrden.disabled = !habilitar;
+
+        if (!habilitar) {
+            numeroOrden.value = "";
+        }
+    }
+
+    function actualizarTipoTrabajo() {
+        if (!tipoTrabajo || !cantidad || !tipoLum) return;
+
+        const habilitar = tipoTrabajo.value === "LUMINARIA";
+
+        cantidad.disabled = !habilitar;
+        tipoLum.disabled = !habilitar;
+
+        if (!habilitar) {
+            cantidad.value = "";
+            tipoLum.value = "";
+        }
+    }
+
+    if (canal) canal.addEventListener("change", actualizarCanal);
+    if (tipoTrabajo) tipoTrabajo.addEventListener("change", actualizarTipoTrabajo);
+
+    actualizarCanal();
+    actualizarTipoTrabajo();
+});
+</script>
+
+{% endblock %}

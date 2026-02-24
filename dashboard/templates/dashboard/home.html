@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="card">
+
+  <!-- HEADER -->
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h3 class="card-title">Eventos</h3>
+
+    <div class="card-tools d-flex gap-2">
+      <button type="button" class="btn btn-outline-secondary btn-sm" id="btnFiltros">
+        🔍 Filtros
+      </button>
+
+      <a href="{% url 'eventos:registrar_evento' %}" class="btn btn-primary btn-sm">
+        + Registrar
+      </a>
+    </div>
+  </div>
+
+  <!-- FILTROS -->
+  <div id="filtrosEvento" style="display:none;">
+    <div class="card-body">
+      <form method="get">
+        <div class="row g-2">
+
+          <div class="col-md-2">
+            <label class="form-label">Canal</label>
+            <select name="canal" class="form-control">
+              <option value="">Todos</option>
+              {% for v,l in choices.canal %}
+                <option value="{{ v }}" {% if f.canal == v %}selected{% endif %}>{{ l }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">Solicitante</label>
+            <select name="solicitante" class="form-control">
+              <option value="">Todos</option>
+              {% for v,l in choices.solicitante %}
+                <option value="{{ v }}" {% if f.solicitante == v %}selected{% endif %}>{{ l }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">Torre</label>
+            <select name="torre" class="form-control">
+              <option value="">Todas</option>
+              {% for v,l in choices.torre %}
+                <option value="{{ v }}" {% if f.torre == v %}selected{% endif %}>{{ l }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">Piso</label>
+            <select name="piso" class="form-control">
+              <option value="">Todos</option>
+              {% for v,l in choices.piso %}
+                <option value="{{ v }}" {% if f.piso == v %}selected{% endif %}>{{ l }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">Servicio</label>
+            <select name="servicio" class="form-control">
+              <option value="">Todos</option>
+              {% for v,l in choices.servicio %}
+                <option value="{{ v }}" {% if f.servicio == v %}selected{% endif %}>{{ l }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">Estado</label>
+            <select name="estado" class="form-control">
+              <option value="">Todos</option>
+              {% for v,l in choices.estado %}
+                <option value="{{ v }}" {% if f.estado == v %}selected{% endif %}>{{ l }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">Turno</label>
+            <select name="turno" class="form-control">
+              <option value="">Todos</option>
+              {% for v,l in choices.turno %}
+                <option value="{{ v }}" {% if f.turno == v %}selected{% endif %}>{{ l }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">Desde</label>
+            <input type="date" name="desde" value="{{ f.desde }}" class="form-control">
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">Hasta</label>
+            <input type="date" name="hasta" value="{{ f.hasta }}" class="form-control">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Buscar</label>
+            <input type="text" name="q" value="{{ f.q }}"
+                   class="form-control"
+                   placeholder="N° orden, circuito, box, descripción...">
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">Por página</label>
+            <select name="page_size" class="form-control">
+              {% for n in page_sizes %}
+                <option value="{{ n }}" {% if f.page_size == n|stringformat:"s" %}selected{% endif %}>{{ n }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-12 d-flex gap-2 mt-3">
+            <button class="btn btn-primary btn-sm" type="submit">Aplicar filtros</button>
+            <a class="btn btn-outline-secondary btn-sm" href="{% url 'dashboard:dashboard' %}">Limpiar</a>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TABLA -->
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-striped table-hover text-nowrap mb-0">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Torre</th>
+            <th>Piso</th>
+            <th>Servicio</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+            <th>Turno</th>
+            <th>N° Orden</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in page_obj %}
+            <tr>
+              <td>{{ e.fecha_creacion|date:"Y-m-d H:i" }}</td>
+              <td>{{ e.get_torre_display }}</td>
+              <td>{{ e.get_piso_display }}</td>
+              <td>{{ e.get_servicio_display }}</td>
+              <td>{{ e.get_tipo_trabajo_display }}</td>
+              <td>{{ e.get_estado_display }}</td>
+              <td>{{ e.turno }}</td>
+              <td>{{ e.numero_orden|default:"-" }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="8" class="text-center text-muted py-4">
+                No hay registros aún.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PAGINACIÓN -->
+  <div class="card-footer d-flex justify-content-between align-items-center">
+    <div class="text-muted">
+      Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+      — {{ page_obj.paginator.count }} registros
+    </div>
+
+    <nav>
+      <ul class="pagination pagination-sm mb-0">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page=1{% if base_qs %}&{{ base_qs }}{% endif %}">«</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if base_qs %}&{{ base_qs }}{% endif %}">‹</a>
+          </li>
+        {% endif %}
+
+        <li class="page-item disabled"><span class="page-link">{{ page_obj.number }}</span></li>
+
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if base_qs %}&{{ base_qs }}{% endif %}">›</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if base_qs %}&{{ base_qs }}{% endif %}">»</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const btn = document.getElementById("btnFiltros");
+    const box = document.getElementById("filtrosEvento");
+
+    if (!btn || !box) return;
+
+    btn.addEventListener("click", function () {
+      const isHidden = box.style.display === "none" || box.style.display === "";
+      box.style.display = isHidden ? "block" : "none";
+    });
+
+    // Abrir automáticamente si hay filtros activos
+    const hasFilters =
+      "{{ f.canal }}{{ f.solicitante }}{{ f.torre }}{{ f.piso }}{{ f.servicio }}{{ f.tipo_trabajo }}{{ f.estado }}{{ f.turno }}{{ f.desde }}{{ f.hasta }}{{ f.q }}" !== "";
+    if (hasFilters) box.style.display = "block";
+  });
+</script>
+
+{% endblock %}
