@@ -2,6 +2,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
 
 from .forms import UsuarioCreateForm, PasswordChangeSimpleForm
 
@@ -29,6 +32,51 @@ def lista_usuarios(request):
 
     return render(request, "usuarios/lista_usuarios.html", {"usuarios": qs, "q": q})
 
+@login_required
+def mi_password(request):
+    if request.method == "POST":
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, "Tu contraseña fue actualizada.")
+            return redirect("dashboard:dashboard")
+    else:
+        form = PasswordChangeForm(request.user)
+
+    # Estilo + textos en español
+    if "old_password" in form.fields:
+        form.fields["old_password"].label = "Contraseña actual"
+        form.fields["old_password"].help_text = ""
+        form.fields["old_password"].widget.attrs.update({
+            "class": "form-control",
+            "placeholder": "Ingrese su contraseña actual",
+        })
+
+    if "new_password1" in form.fields:
+        form.fields["new_password1"].label = "Nueva contraseña"
+        form.fields["new_password1"].help_text = (
+            "<ul class='mb-0 ps-3'>"
+            "<li>La contraseña no debe ser demasiado parecida a tu información personal.</li>"
+            "<li>Debe contener al menos 8 caracteres.</li>"
+            "<li>No debe ser una contraseña demasiado común.</li>"
+            "<li>No puede estar compuesta solo por números.</li>"
+            "</ul>"
+        )
+        form.fields["new_password1"].widget.attrs.update({
+            "class": "form-control",
+            "placeholder": "Ingrese la nueva contraseña",
+        })
+
+    if "new_password2" in form.fields:
+        form.fields["new_password2"].label = "Confirmar nueva contraseña"
+        form.fields["new_password2"].help_text = "Ingrese nuevamente la contraseña para validarla."
+        form.fields["new_password2"].widget.attrs.update({
+            "class": "form-control",
+            "placeholder": "Repita la nueva contraseña",
+        })
+
+    return render(request, "usuarios/mi_password.html", {"form": form})
 
 @solo_supervisor
 def crear_usuario(request):

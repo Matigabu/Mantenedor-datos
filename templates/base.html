@@ -17,7 +17,7 @@
 
 <div class="app-wrapper">
 
-    <!-- ================= NAVBAR ================= -->
+    <!-- ------- NAVBAR ------- -->
     <nav class="app-header navbar navbar-expand bg-body shadow-sm">
         <div class="container-fluid">
 
@@ -40,6 +40,13 @@
                         </span>
                     </li>
 
+                    <li class="nav-item me-2">
+                        <a href="{% url 'usuarios:mi_password' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-key me-1"></i>
+                            Mi contraseña
+                        </a>
+                    </li>
+
                     <li class="nav-item">
                         <form method="post" action="{% url 'logout' %}">
                             {% csrf_token %}
@@ -55,7 +62,7 @@
         </div>
     </nav>
 
-    <!-- ================= SIDEBAR ================= -->
+    <!--  SIDEBAR ----- -->
     <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
         <div class="sidebar-brand">
             <a href="{% url 'dashboard:dashboard' %}" class="brand-link text-decoration-none">
@@ -111,7 +118,7 @@
         </div>
     </aside>
 
-    <!-- ================= CONTENIDO ================= -->
+    <!-- --------------- CONTENIDO  -->
     <main class="app-main">
         <div class="app-content p-3">
 
@@ -132,9 +139,9 @@
 
 </div>
 
-<!-- ================= JS ================= -->
+<!-- -JS --- -->
 
-<!-- Bootstrap Bundle -->
+<!-- Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <!-- AdminLTE JS -->
