@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">{{ titulo }}</h3>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-8 col-lg-5">
+
+          {% for field in form %}
+            <div class="mb-3">
+              {% if field.field.widget.input_type == "checkbox" %}
+                <div class="form-check">
+                  {{ field }}
+                  <label class="form-check-label" for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                  </label>
+                </div>
+              {% else %}
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+              {% endif %}
+
+              {% if field.help_text %}
+                <div class="text-muted small mt-1">{{ field.help_text|safe }}</div>
+              {% endif %}
+
+              {% if field.errors %}
+                <div class="text-danger small mt-1">
+                  {{ field.errors }}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+
+        </div>
+      </div>
+    </div>
+
+    <div class="card-footer d-flex gap-2">
+      <button class="btn btn-primary" type="submit">Guardar</button>
+      <a class="btn btn-outline-secondary" href="{% url 'usuarios:lista' %}">Volver</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

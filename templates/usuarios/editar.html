@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Editar usuario{% endblock %}
+{% block content %}
+
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Editar: {{ u.username }}</h3>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="card-body">
+
+      <div class="row g-2">
+        <div class="col-md-6">
+          <label class="form-label">Nombre</label>
+          <input class="form-control" name="first_name" value="{{ u.first_name }}">
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Apellido</label>
+          <input class="form-control" name="last_name" value="{{ u.last_name }}">
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Email</label>
+          <input class="form-control" name="email" value="{{ u.email }}">
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {% if u.is_active %}checked{% endif %}>
+            <label class="form-check-label" for="is_active">Activo</label>
+          </div>
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="is_staff" id="is_staff" {% if u.is_staff %}checked{% endif %}>
+            <label class="form-check-label" for="is_staff">Staff</label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="card-footer d-flex gap-2">
+      <button class="btn btn-primary" type="submit">Guardar</button>
+      <a class="btn btn-outline-secondary" href="{% url 'usuarios:lista' %}">Volver</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

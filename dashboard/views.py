@@ -1,10 +1,12 @@
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 from eventos.models import Evento
 
 
+@login_required
 def home(request):
     qs = Evento.objects.all().order_by("-fecha_creacion")
 

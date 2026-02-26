@@ -13,6 +13,12 @@
 
         <div class="card-body">
 
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+              </div>
+            {% endif %}
+
             <!--  ORIGEN  -->
             <div class="card card-outline mb-4">
                 <div class="card-header">
@@ -22,18 +28,21 @@
                     <div class="row">
 
                         <div class="col-md-4 mb-3">
-                            <label>{{ form.canal.label }}</label>
+                            <label class="form-label">{{ form.canal.label }}</label>
                             {{ form.canal }}
+                            {% if form.canal.errors %}<div class="text-danger small">{{ form.canal.errors }}</div>{% endif %}
                         </div>
 
                         <div class="col-md-4 mb-3">
-                            <label>{{ form.numero_orden.label }}</label>
+                            <label class="form-label">{{ form.numero_orden.label }}</label>
                             {{ form.numero_orden }}
+                            {% if form.numero_orden.errors %}<div class="text-danger small">{{ form.numero_orden.errors }}</div>{% endif %}
                         </div>
 
                         <div class="col-md-4 mb-3">
-                            <label>{{ form.solicitante.label }}</label>
+                            <label class="form-label">{{ form.solicitante.label }}</label>
                             {{ form.solicitante }}
+                            {% if form.solicitante.errors %}<div class="text-danger small">{{ form.solicitante.errors }}</div>{% endif %}
                         </div>
 
                     </div>
@@ -49,23 +58,27 @@
                     <div class="row">
 
                         <div class="col-md-3 mb-3">
-                            <label>{{ form.torre.label }}</label>
+                            <label class="form-label">{{ form.torre.label }}</label>
                             {{ form.torre }}
+                            {% if form.torre.errors %}<div class="text-danger small">{{ form.torre.errors }}</div>{% endif %}
                         </div>
 
                         <div class="col-md-3 mb-3">
-                            <label>{{ form.piso.label }}</label>
+                            <label class="form-label">{{ form.piso.label }}</label>
                             {{ form.piso }}
+                            {% if form.piso.errors %}<div class="text-danger small">{{ form.piso.errors }}</div>{% endif %}
                         </div>
 
                         <div class="col-md-3 mb-3">
-                            <label>{{ form.servicio.label }}</label>
+                            <label class="form-label">{{ form.servicio.label }}</label>
                             {{ form.servicio }}
+                            {% if form.servicio.errors %}<div class="text-danger small">{{ form.servicio.errors }}</div>{% endif %}
                         </div>
 
                         <div class="col-md-3 mb-3">
-                            <label>{{ form.habitacion_box.label }}</label>
+                            <label class="form-label">{{ form.habitacion_box.label }}</label>
                             {{ form.habitacion_box }}
+                            {% if form.habitacion_box.errors %}<div class="text-danger small">{{ form.habitacion_box.errors }}</div>{% endif %}
                         </div>
 
                     </div>
@@ -82,41 +95,54 @@
                     <div class="row">
 
                         <div class="col-md-4 mb-3">
-                            <label>{{ form.tipo_trabajo.label }}</label>
+                            <label class="form-label">{{ form.tipo_trabajo.label }}</label>
                             {{ form.tipo_trabajo }}
+                            {% if form.tipo_trabajo.errors %}<div class="text-danger small">{{ form.tipo_trabajo.errors }}</div>{% endif %}
                         </div>
 
                         <div class="col-md-4 mb-3">
-                            <label>{{ form.numero_circuito.label }}</label>
+                            <label class="form-label">{{ form.numero_circuito.label }}</label>
                             {{ form.numero_circuito }}
+                            {% if form.numero_circuito.errors %}<div class="text-danger small">{{ form.numero_circuito.errors }}</div>{% endif %}
                         </div>
 
                         <div class="col-md-2 mb-3">
-                            <label>{{ form.cantidad_luminaria.label }}</label>
+                            <label class="form-label">{{ form.cantidad_luminaria.label }}</label>
                             {{ form.cantidad_luminaria }}
+                            {% if form.cantidad_luminaria.errors %}<div class="text-danger small">{{ form.cantidad_luminaria.errors }}</div>{% endif %}
                         </div>
 
                         <div class="col-md-2 mb-3">
-                            <label>{{ form.tipo_luminaria.label }}</label>
+                            <label class="form-label">{{ form.tipo_luminaria.label }}</label>
                             {{ form.tipo_luminaria }}
+                            {% if form.tipo_luminaria.errors %}<div class="text-danger small">{{ form.tipo_luminaria.errors }}</div>{% endif %}
                         </div>
 
                     </div>
 
                     <div class="mb-3">
-                        <label>{{ form.descripcion.label }}</label>
+                        <label class="form-label">{{ form.descripcion.label }}</label>
                         {{ form.descripcion }}
+                        {% if form.descripcion.errors %}<div class="text-danger small">{{ form.descripcion.errors }}</div>{% endif %}
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label>{{ form.estado.label }}</label>
+                            <label class="form-label">{{ form.estado.label }}</label>
                             {{ form.estado }}
+                            {% if form.estado.errors %}<div class="text-danger small">{{ form.estado.errors }}</div>{% endif %}
                         </div>
+
                         <div class="col-md-6 mb-3">
-                            <label>{{ form.turno.label }}</label>
-                            {{ form.turno }}
-                        </div>
+                            <label class="form-label">{{ form.turno.label }}</label>
+                                {{ form.turno }}
+                                {% if form.turno.errors %}<div class="text-danger small">{{ form.turno.errors }}</div>{% endif %}
+
+                                 {% if puede_asignar_turno %}
+                                <div class="form-text">Puedes asignar el turno del evento.</div>
+                                    {% else %}
+                        <div class="form-text">Turno bloqueado según usuario logueado.</div>
+                         {% endif %}
                     </div>
 
                 </div>
@@ -131,6 +157,8 @@
         </div>
     </form>
 </div>
+
+<!-- Js del formulario -->
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {

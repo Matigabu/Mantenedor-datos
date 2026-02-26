@@ -1,7 +1,17 @@
 from django.db import models
+from django.conf import settings
 
 
 class Evento(models.Model):
+
+    creado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="eventos_creados",
+        verbose_name="Registrado por"
+    )
 
     # ================= ORIGEN =================
     CANAL_CHOICES = [
@@ -48,12 +58,7 @@ class Evento(models.Model):
     ]
 
     torre = models.CharField(max_length=20, choices=TORRE_CHOICES, db_index=True)
-    piso = models.CharField(
-    max_length=20,
-    choices=PISO_CHOICES,
-    blank=True,
-    null=True
-)
+    piso = models.CharField(max_length=20, choices=PISO_CHOICES, blank=True, null=True)
 
     SERVICIO_CHOICES = [
         ("BANCO_SANGRE", "Banco de sangre"),
@@ -138,13 +143,7 @@ class Evento(models.Model):
 
     tipo_trabajo = models.CharField(max_length=30, choices=TIPO_TRABAJO_CHOICES, db_index=True)
 
-    numero_circuito = models.CharField(
-        max_length=50,
-        blank=True,
-        null=True,
-        verbose_name="N° circuito"
-    )
-
+    numero_circuito = models.CharField(max_length=50, blank=True, null=True, verbose_name="N° circuito")
     cantidad_luminaria = models.IntegerField(blank=True, null=True)
 
     tipo_luminaria = models.CharField(
@@ -171,7 +170,15 @@ class Evento(models.Model):
     ]
 
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, db_index=True)
-    turno = models.CharField(max_length=2, choices=TURNOS, db_index=True)
+
+    # ✅ turno ahora opcional para permitir supervisor y evitar errores
+    turno = models.CharField(
+        max_length=2,
+        choices=TURNOS,
+        db_index=True,
+        blank=True,
+        null=True
+    )
 
     # ================= CONTROL =================
     fecha_creacion = models.DateTimeField(auto_now_add=True)
