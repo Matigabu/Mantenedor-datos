@@ -19,7 +19,7 @@
               </div>
             {% endif %}
 
-            <!--  ORIGEN  -->
+            <!-- ORIGEN -->
             <div class="card card-outline mb-4">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Origen</h5>
@@ -46,10 +46,66 @@
                         </div>
 
                     </div>
+
+                    <!-- validación de cierre de ot (solo fracttal) -->
+                     <!-- es un bloque dinámico para historial de órdenes de fracttal -->
+                    <div class="row">
+                        <div class="col-md-4 mb-3" id="bloque-cierre-ot-fracttal" style="display:none;">
+                            <label for="id_cierre_ot_fracttal" class="form-label">¿Se pudo cerrar esta OT?</label>
+                            <select name="cierre_ot_fracttal" id="id_cierre_ot_fracttal" class="form-control">
+                                <option value="">Seleccione una opción</option>
+                                <option value="SI">Sí</option>
+                                <option value="NO">No</option>
+                            </select>
+                            <div class="form-text">Si seleccionas “No”, debes indicar restricción y detalle.</div>
+                        </div>
+                    </div>
+
+                    <!-- seguimiento -->
+                    <div id="bloque-seguimiento-fracttal" class="row mt-2" style="display: none;">
+                        <div class="col-12">
+                            <div class="alert alert-warning" id="mensaje-seguimiento-fracttal">
+                                Esta OT ya existe. No se creará un evento nuevo; se agregará un seguimiento al historial.
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="id_restriccion_fracttal" class="form-label">Restricción</label>
+                            <input
+                                type="text"
+                                name="restriccion_fracttal"
+                                id="id_restriccion_fracttal"
+                                class="form-control"
+                                placeholder="Ej: trabajos cruzados, sin acceso, área ocupada"
+                            >
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="id_encargado_area_fracttal" class="form-label">Encargado del área</label>
+                            <input
+                                type="text"
+                                name="encargado_area_fracttal"
+                                id="id_encargado_area_fracttal"
+                                class="form-control"
+                                placeholder="Nombre de la persona que autoriza o restringe"
+                            >
+                        </div>
+
+                        <div class="col-12 mb-3">
+                            <label for="id_detalle_seguimiento_fracttal" class="form-label">Detalle del seguimiento</label>
+                            <textarea
+                                name="detalle_seguimiento_fracttal"
+                                id="id_detalle_seguimiento_fracttal"
+                                class="form-control"
+                                rows="3"
+                                placeholder="Describe qué ocurrió en esta visita"
+                            ></textarea>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!--  UBICACIÓN  -->
+            <!-- UBICACIÓN -->
             <div class="card card-outline mb-4">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Ubicación</h5>
@@ -135,14 +191,15 @@
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">{{ form.turno.label }}</label>
-                                {{ form.turno }}
-                                {% if form.turno.errors %}<div class="text-danger small">{{ form.turno.errors }}</div>{% endif %}
+                            {{ form.turno }}
+                            {% if form.turno.errors %}<div class="text-danger small">{{ form.turno.errors }}</div>{% endif %}
 
-                                 {% if puede_asignar_turno %}
+                            {% if puede_asignar_turno %}
                                 <div class="form-text">Puedes asignar el turno del evento.</div>
-                                    {% else %}
-                        <div class="form-text">Turno bloqueado según usuario logueado.</div>
-                         {% endif %}
+                            {% else %}
+                                <div class="form-text">Turno bloqueado según usuario logueado.</div>
+                            {% endif %}
+                        </div>
                     </div>
 
                 </div>
@@ -158,11 +215,11 @@
     </form>
 </div>
 
-<!-- Js del formulario -->
+
+<!-- Js -->
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-
     const canal = document.getElementById("id_canal");
     const numeroOrden = document.getElementById("id_numero_orden");
 
@@ -170,14 +227,31 @@ document.addEventListener("DOMContentLoaded", function() {
     const cantidad = document.getElementById("id_cantidad_luminaria");
     const tipoLum = document.getElementById("id_tipo_luminaria");
 
+    const bloqueSeguimiento = document.getElementById("bloque-seguimiento-fracttal");
+    const bloqueCierre = document.getElementById("bloque-cierre-ot-fracttal");
+    const cierreOt = document.getElementById("id_cierre_ot_fracttal");
+    const mensajeSeguimiento = document.getElementById("mensaje-seguimiento-fracttal");
+
+    let otExiste = false;
+
     function actualizarCanal() {
         if (!canal || !numeroOrden) return;
 
         const habilitar = canal.value === "FRACTTAL";
         numeroOrden.disabled = !habilitar;
 
+        if (bloqueCierre) {
+            bloqueCierre.style.display = habilitar ? "block" : "none";
+        }
+
         if (!habilitar) {
             numeroOrden.value = "";
+            if (cierreOt) cierreOt.value = "";
+            otExiste = false;
+
+            if (bloqueSeguimiento) {
+                bloqueSeguimiento.style.display = "none";
+            }
         }
     }
 
@@ -195,11 +269,76 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    if (canal) canal.addEventListener("change", actualizarCanal);
-    if (tipoTrabajo) tipoTrabajo.addEventListener("change", actualizarTipoTrabajo);
+    function actualizarBloqueSeguimiento() {
+        if (!bloqueSeguimiento) return;
+
+        const noSePudoCerrar = cierreOt && cierreOt.value === "NO";
+        const mostrar = otExiste || noSePudoCerrar;
+
+        bloqueSeguimiento.style.display = mostrar ? "flex" : "none";
+
+        if (mensajeSeguimiento) {
+            if (otExiste) {
+                mensajeSeguimiento.textContent = "Esta OT ya existe. No se creará un evento nuevo; se agregará un seguimiento al historial.";
+            } else if (noSePudoCerrar) {
+                mensajeSeguimiento.textContent = "La OT no se pudo cerrar. Completa estos campos para dejar respaldo del intento.";
+            }
+        }
+    }
+
+    async function validarOtFracttalExistente() {
+        if (!canal || !numeroOrden || !bloqueSeguimiento) return;
+
+        const esFracttal = canal.value === "FRACTTAL";
+        const numero = numeroOrden.value.trim();
+
+        if (bloqueCierre) {
+            bloqueCierre.style.display = esFracttal ? "block" : "none";
+        }
+
+        if (!esFracttal || !numero) {
+            otExiste = false;
+            actualizarBloqueSeguimiento();
+            return;
+        }
+
+        try {
+            const url = `{% url 'eventos:validar_ot_fracttal' %}?numero_orden=${encodeURIComponent(numero)}`;
+            const response = await fetch(url, {
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            });
+
+            const data = await response.json();
+            otExiste = !!data.existe;
+            actualizarBloqueSeguimiento();
+        } catch (error) {
+            otExiste = false;
+            actualizarBloqueSeguimiento();
+        }
+    }
+
+    if (canal) {
+        canal.addEventListener("change", function() {
+            actualizarCanal();
+            validarOtFracttalExistente();
+        });
+    }
+
+    if (numeroOrden) {
+        numeroOrden.addEventListener("blur", validarOtFracttalExistente);
+    }
+
+    if (cierreOt) {
+        cierreOt.addEventListener("change", actualizarBloqueSeguimiento);
+    }
+
+    if (tipoTrabajo) {
+        tipoTrabajo.addEventListener("change", actualizarTipoTrabajo);
+    }
 
     actualizarCanal();
     actualizarTipoTrabajo();
+    validarOtFracttalExistente();
 });
 </script>
 

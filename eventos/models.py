@@ -13,7 +13,7 @@ class Evento(models.Model):
         verbose_name="Registrado por"
     )
 
-    # ================= ORIGEN =================
+    # ----------- ORIGEN -----------#
     CANAL_CHOICES = [
         ("RONDA", "Ronda programada"),
         ("WSP", "Whatsapp"),
@@ -38,7 +38,7 @@ class Evento(models.Model):
     numero_orden = models.CharField(max_length=100, blank=True, null=True)
     solicitante = models.CharField(max_length=50, choices=SOLICITANTE_CHOICES)
 
-    # ================= UBICACIÓN =================
+    # --------------UBICACIÓN ----------#
     TORRE_CHOICES = [
         ("A", "A"), ("B", "B"), ("C", "C"), ("CDA", "CDA"),
         ("D", "D"), ("E", "E"), ("F", "F"), ("G", "G"),
@@ -113,7 +113,7 @@ class Evento(models.Model):
         verbose_name="N° habitación / Box"
     )
 
-    # ================= DETALLE TÉCNICO =================
+    # ------------------ DETALLE TÉCNICO ---------------#
     TIPO_TRABAJO_CHOICES = [
         ("ACCESO", "Acceso"),
         ("CABECERA", "Cabecera"),
@@ -155,7 +155,7 @@ class Evento(models.Model):
 
     descripcion = models.TextField()
 
-    # ================= ESTADO =================
+    # ---------------- ESTADO ---------------#
     ESTADO_CHOICES = [
         ("REALIZADO", "Realizado"),
         ("PENDIENTE", "Pendiente"),
@@ -171,7 +171,7 @@ class Evento(models.Model):
 
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, db_index=True)
 
-    # ✅ turno ahora opcional para permitir supervisor y evitar errores
+    # turno opcional para permitir supervisor y evitar errores
     turno = models.CharField(
         max_length=2,
         choices=TURNOS,
@@ -180,19 +180,54 @@ class Evento(models.Model):
         null=True
     )
 
-    # ================= CONTROL =================
+    # ------------------ CONTROL --------------#
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['-fecha_creacion']
+        ordering = ["-fecha_creacion"]
         indexes = [
-            models.Index(fields=['fecha_creacion']),
-            models.Index(fields=['tipo_trabajo']),
-            models.Index(fields=['torre']),
-            models.Index(fields=['servicio']),
-            models.Index(fields=['estado']),
-            models.Index(fields=['turno']),
+            models.Index(fields=["fecha_creacion"]),
+            models.Index(fields=["tipo_trabajo"]),
+            models.Index(fields=["torre"]),
+            models.Index(fields=["servicio"]),
+            models.Index(fields=["estado"]),
+            models.Index(fields=["turno"]),
         ]
 
     def __str__(self):
         return f"{self.fecha_creacion.date()} - {self.get_tipo_trabajo_display()} - {self.get_torre_display()}"
+
+
+class SeguimientoFracttal(models.Model):
+    evento = models.ForeignKey(
+        Evento,
+        on_delete=models.CASCADE,
+        related_name="seguimientos_fracttal",
+        verbose_name="Evento asociado",
+    )
+    restriccion = models.CharField("Restricción", max_length=255)
+    encargado_area = models.CharField("Encargado del área", max_length=120, blank=True)
+    detalle = models.TextField("Detalle", blank=True)
+
+    creado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="seguimientos_fracttal_creados",
+        verbose_name="Registrado por",
+    )
+
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Seguimiento Fracttal"
+        verbose_name_plural = "Seguimientos Fracttal"
+        ordering = ["-fecha_creacion"]
+        indexes = [
+            models.Index(fields=["fecha_creacion"]),
+        ]
+
+    def __str__(self):
+        numero = self.evento.numero_orden or "Sin OT"
+        return f"{numero} - {self.fecha_creacion:%d/%m/%Y %H:%M}"

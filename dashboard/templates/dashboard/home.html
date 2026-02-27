@@ -146,6 +146,7 @@
             <th>Estado</th>
             <th>Turno</th>
             <th>N° Orden</th>
+            <th class="text-center">Seguimiento</th>
           </tr>
         </thead>
         <tbody>
@@ -159,10 +160,23 @@
               <td>{{ e.get_estado_display }}</td>
               <td>{{ e.turno }}</td>
               <td>{{ e.numero_orden|default:"-" }}</td>
+              <td class="text-center align-middle">
+                {% if e.canal == "FRACTTAL" and e.numero_orden %}
+                  <a
+                    href="{% url 'eventos:ver_seguimiento_fracttal' e.pk %}"
+                    class="btn btn-outline-info btn-sm"
+                    title="Ver seguimiento"
+                  >
+                    <i class="bi bi-eye"></i>
+                  </a>
+                {% else %}
+                  <span class="text-muted">-</span>
+                {% endif %}
+              </td>
             </tr>
           {% empty %}
             <tr>
-              <td colspan="8" class="text-center text-muted py-4">
+              <td colspan="9" class="text-center text-muted py-4">
                 No hay registros aún.
               </td>
             </tr>
