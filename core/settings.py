@@ -77,12 +77,15 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mantenedor_db',
-        'USER': 'postgres',
-        'PASSWORD': 'pasword',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'Fleischmann-Clinica',
+        'USER': 'admin',
+        'PASSWORD': 'flCwbsbFsQKj',
+        'HOST': 'db-lamp-servicios.c0f3tpxaw7w5.us-east-1.rds.amazonaws.com',
+        'PORT': '3306',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
     }
 }
 
